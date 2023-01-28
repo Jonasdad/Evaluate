@@ -11,7 +11,8 @@ defmodule EnvTree do
     test_tree = EnvTree.add(test_tree, :a, 5)
     test_tree = EnvTree.add(test_tree, :c, 2)
     test_tree = EnvTree.add(test_tree, :a, 3)
-    test_tree = EnvTree.remove(test_tree, :a)
+    #test_tree = EnvTree.remove(test_tree, :a)
+    test_tree = lookup(test_tree, :a)
     #lookup(test_tree, :c)
     #test_tree = EnvTree.add(test_tree, :d, 6)
     #test_tree = EnvTree.add(test_tree, :e, 7)
@@ -34,20 +35,8 @@ defmodule EnvTree do
   def add({:node, k, v, left, right}, key, value) do {:node, k,v,left,add(right,key,value)} end
 
   #Element not found and cannot be found
-  def lookup({:nil, k, _}, key) do nil end
+  def lookup({:nil, _, k}, key) do nil end
   def lookup({:node, key, value, _, _}, key) do value end
   def lookup({:node, k, _, left, _}, key) when key < k do lookup(left, key) end
-  def lookup({:node, k, _, _, right}, key) do lookup(right, key) end
-
-  #Element not found and cannot be removed
-  def remove(nil, _) do nil end
-  def remove({:node, key, _, nil, right}, key) do right end
-  def remove({:node, key, _, left, nil}, key) do left end
-  def remove({:node, key, _, left, right}, key) do {key, value, remainder} = leftmost(right); {:node, key, value, left, remainder} end
-
-  def remove({:node, k, v, left, right}, key) when key < k do {:node, k, v, remove(left, key), right} end
-  def remove({:node, k, v, left, right}, key) do {:node, k, v, left, remove(right, key)} end
-
-  def leftmost({:node, key, value, nil, rest}) do rest end
-  def leftmost({:node, k, v, left, right}) do {:node, k, v} = leftmost(left) end
+  def lookup({:node, k, _, _, right},key) do lookup(right, key) end
 end
