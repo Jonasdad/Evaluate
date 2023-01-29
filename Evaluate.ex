@@ -64,7 +64,7 @@ defmodule Evaluate do
     end
 
  # def eval({:mul, {:q, expr1, expr2}, expr3}) do Evaulate.div(mul(expr1, expr3), expr2) end
-
+# test 123
 
  def add(expr1, expr2) do expr1 + expr2 end
  def mul({type, n, d}, expr1) when type == :div do Evaluate.div({:num, n*expr1}, {:num, d}) end
