@@ -15,9 +15,14 @@ defmodule Evaluate do
     env = EnvTree.add(env, :p, 8)
     env = EnvTree.add(env, :u, 7)
     env = EnvTree.add(env, :q, 6)
+    env = EnvTree.add(env, :k, 9)
 
-  #4 * 3/4 = 3/2
-    expr = {:mul, {:add, {:num, :p},  {:div, {:num, :a}, {:num, :b}}}, {:num, :b}}
+  #(8 + 3/2) *(2) + 2 / 4 = 20/4 = 5
+    #expr = {:div, {:add, {:mul, {:add, {:num, :p},  {:div, {:num, :a}, {:num, :b}}}, {:num, :b}}, {:num, :d}}, {:num, :c}}
+  #2 - 3/2 = 4/2 - 3/2 = 1/2
+  #expr = {:sub, {:num, :b}, {:div, {:num, :a}, {:num, :b}}}
+  #expr = {:mul, {:div, {:num, :d}, {:num, :c}}, {:div, {:num, :a}, {:num, :b}}}
+  expr = {:div, {:q, {:num, :a}, {:num, :b}}, {:q, {:num, :c}, {:num, :m}}}
   IO.write("Evaluation with substitution: #{simplify(eval(expr, env))}\n")
 end
 
@@ -32,14 +37,23 @@ end
   def eval({:num, n}, env) do EnvTree.lookup(env, n) end
   def eval({:var, v}, env) do EnvTree.lookup(env, v) end
   def eval({:add, expr1, expr2}, env) do add(eval(expr1, env), eval(expr2, env)) end
+  def eval({:sub, expr1, expr2}, env) do sub(eval(expr1, env), eval(expr2, env)) end
   def eval({:mul, expr1, expr2}, env) do mul(eval(expr1, env), eval(expr2, env)) end
+  def eval({:q, expr1, expr2}, env) do divi(eval(expr1, env), eval(expr2, env)) end
   def eval({:div, expr1, expr2}, env) do divi(eval(expr1, env), eval(expr2, env)) end
 
 #Addition rules
+def add({:q, expr1, expr2}, {:q, expr3, expr2}) do divi(expr1+expr3, expr2) end
   def add({:q, expr1, expr2}, expr3) do divi((expr2*expr3 + expr1), expr2) end
   def add(expr3, {:q, expr1, expr2}) do divi(expr2*expr3 + expr1, expr2) end
-  def add({:q, expr1, expr2}, {:q, expr3, expr2}) do {:q, expr1+expr3, expr3} end
   def add(n, p) do n + p end
+
+#Subtraction rules (minus addition)
+#3/4 - 2 = 3/4 - 8/4 = -5/4
+def sub({:q, expr1, expr2}, {:q, expr3, expr2}) do divi(expr1-expr3, expr2) end
+def sub({:q, expr1, expr2}, expr3) do divi((-(expr2*expr3) + expr1), expr2) end
+def sub(expr3, {:q, expr1, expr2}) do divi((-(expr2*expr3) + expr1), expr2) end
+def sub(p,q) do p-q end
 
 #Multiplication rules
   def mul({:q, expr1, expr2}, {:q, expr3, expr4}) do divi(expr1*expr3, expr2*expr4) end
@@ -47,7 +61,7 @@ end
   def mul(expr3, {:q, expr1, expr2}) do divi(expr1*expr3, expr2) end
   def mul(expr1, expr2) do expr1 * expr2 end
 
-  def divi({:q, expr1, expr2}, {:q, expr3, expr4}) do divi({expr1*expr4}, {expr2*expr3}) end
+  def divi({:q, expr1, expr2}, {:q, expr3, expr4}) do divi(expr1*expr4, expr2*expr3) end
   def divi(nom,denom) when denom > nom do
     if(rem(denom, nom) == 0) do {:q, trunc(nom/nom), trunc(denom/nom)}
     else
