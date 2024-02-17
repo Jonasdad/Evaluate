@@ -1,3 +1,5 @@
+#Author: Jonas Dåderman
+#Course: ID1019
 defmodule Evaluate do
   @type literal() :: {:num, number()}
   @type expr() :: {:add, expr(), expr()}
@@ -7,7 +9,7 @@ defmodule Evaluate do
                 | literal()
   def test() do
     env = EnvTree.new()
-    env = EnvTree.add(:nil, :a, 3)
+    env = EnvTree.add(:nil, :a, 0)
     env = EnvTree.add(env, :c, 4)
     env = EnvTree.add(env, :d, 1)
     env = EnvTree.add(env, :b, 2)
