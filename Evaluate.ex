@@ -24,8 +24,9 @@ defmodule Evaluate do
   #2 - 3/2 = 4/2 - 3/2 = 1/2
   #expr = {:sub, {:num, :b}, {:div, {:num, :a}, {:num, :b}}}
   #expr = {:mul, {:div, {:num, :d}, {:num, :c}}, {:div, {:num, :a}, {:num, :b}}}
-  expr = {:div, {:q, {:num, :a}, {:num, :b}}, {:q, {:num, :c}, {:num, :m}}}
-  IO.write("Evaluation with substitution: #{simplify(eval(expr, env))}\n")
+ # expr = {:div, {:q, {:num, :a}, {:num, :b}}, {:q, {:num, :c}, {:num, :m}}}
+ expr = {:add, {:q, {:num, :d}, {:num, :b}}, {:q, {:num, :d}, {:num, :c}}}
+ IO.write("Evaluation with substitution: #{simplify(eval(expr, env))}\n")
 end
 
   def simplify({:num, n}) do "#{n}" end
@@ -45,7 +46,7 @@ end
   def eval({:div, expr1, expr2}, env) do divi(eval(expr1, env), eval(expr2, env)) end
 
 #Addition rules
-def add({:q, expr1, expr2}, {:q, expr3, expr2}) do divi(expr1+expr3, expr2) end
+  def add({:q, expr1, expr2}, {:q, expr3, expr2}) do divi(expr1+expr3, expr2) end
   def add({:q, expr1, expr2}, expr3) do divi((expr2*expr3 + expr1), expr2) end
   def add(expr3, {:q, expr1, expr2}) do divi(expr2*expr3 + expr1, expr2) end
   def add(n, p) do n + p end
